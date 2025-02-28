@@ -7,35 +7,50 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build-windows:
-    name: Build OpenRGB on Windows
-    runs-on: windows-latest
+  Windows:
+    name: build-windows
+    runs-on: [self-hosted, windows]
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v1
+      with:
+        submodules: recursive
 
-    - name: Install Visual Studio Build Tools
+    - name: Installing dependencies
       run: |
-        choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.NativeDesktop --includeRecommended"
-
-    - name: Install dependencies
-      run: choco install qt5
+        cd ..
+        git clone https://github.com/Microsoft/vcpkg.git
+        cd vcpkg
+        git checkout --force 2020.01
+        .\bootstrap-vcpkg.bat
+        .\vcpkg.exe install qt5:x64-windows
+        .\vcpkg.exe install hidapi:x64-windows
+        .\vcpkg.exe install libusb:x64-windows
+        .\vcpkg.exe install mbedtls:x64-windows
 
     - name: Clone OpenRGB repository
       run: git clone https://gitlab.com/CalcProgrammer1/OpenRGB
 
-    - name: Build OpenRGB
+    - name: Running cmake (windows)
       run: |
-        cd OpenRGB
-        qmake OpenRGB.pro
-        msbuild OpenRGB.sln /p:Configuration=Release
+        cd ${{ github.workspace }}/OpenRGB
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/../vcpkg/scripts/buildsystems/vcpkg.cmake
 
-    - name: Run tests
+    - name: Build OpenRGB (windows)
       run: |
-        cd OpenRGB
-        msbuild OpenRGB.sln /t:Build /p:Configuration=Release /p:Platform=x64
+        cd ${{ github.workspace }}/OpenRGB/build
+        MSBuild.exe OpenRGB.sln /p:Configuration=Release
 
-    - name: Run distcheck
+    - name: Run tests (windows)
       run: |
-        cd OpenRGB
-        msbuild OpenRGB.sln /t:Build /p:Configuration=Release
+        cd ${{ github.workspace }}/OpenRGB/build
+        MSBuild.exe OpenRGB.sln /t:Build /p:Configuration=Release /p:Platform=x64
+
+    - name: Run distcheck (windows)
+      run: |
+        cd ${{ github.workspace }}/OpenRGB/build
+        MSBuild.exe OpenRGB.sln /t:Build /p:Configuration=Release
+
