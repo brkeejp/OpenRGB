@@ -32,8 +32,6 @@ jobs:
     - name: Restore vcpkg packages
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: vcpkg integrate install
-      with:
-        vcpkgJsonGlob: 'vcpkg.json'
 
     - name: Checkout
       uses: actions/checkout@v4
