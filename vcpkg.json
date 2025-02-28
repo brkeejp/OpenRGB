@@ -1,8 +1,9 @@
 {
-    "dependencies": [
-      "qt5",
-      "hidapi",
-      "libusb",
-      "mbedtls"
-    ]
-  }
+  "runVcpkgInstall": true,
+  "dependencies": [
+    "qt5",
+    "hidapi",
+    "libusb",
+    "mbedtls"
+  ]
+}
