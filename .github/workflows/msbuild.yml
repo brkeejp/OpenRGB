@@ -30,7 +30,7 @@ jobs:
     steps:
 
     - name: run-vcpkg
-      uses: lukka/run-vcpkg@b322364f06308bdd24823f9d8f03fe0cc86fd46f
+      uses: lukka/run-vcpkg@v11
       with:
         vcpkgJsonGlob: 'vcpkg.json'
 
