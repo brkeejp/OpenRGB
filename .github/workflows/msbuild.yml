@@ -46,6 +46,10 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: vcpkg integrate install
 
+    - name: Build Qt Project
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run:  qtcreator OpenRGB.pro
+
     - name: Build
       working-directory: ${{env.GITHUB_WORKSPACE}}
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
