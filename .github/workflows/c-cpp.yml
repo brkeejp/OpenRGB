@@ -14,14 +14,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Visual Studio
-      uses: microsoft/setup-msbuild@v1
-      with:
-        vs-version: '2019'
+    - name: Install Visual Studio Build Tools
+      run: |
+        choco install visualstudio2019buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.NativeDesktop --includeRecommended"
 
     - name: Install dependencies
-      run: |
-        choco install qt5
+      run: choco install qt5
 
     - name: Clone OpenRGB repository
       run: git clone https://gitlab.com/CalcProgrammer1/OpenRGB
