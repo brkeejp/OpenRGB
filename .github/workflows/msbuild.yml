@@ -28,11 +28,6 @@ jobs:
     runs-on: windows-latest
 
     steps:
-
-    - name: Restore vcpkg packages
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: vcpkg integrate install
-
     - name: Checkout
       uses: actions/checkout@v4
       with:
@@ -41,6 +36,15 @@ jobs:
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
 
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v4
+      with:
+        version: '5.15.2'
+        host: 'windows'
+
+    - name: Restore vcpkg packages
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: vcpkg integrate install
 
     - name: Build
       working-directory: ${{env.GITHUB_WORKSPACE}}
