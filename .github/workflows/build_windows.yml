@@ -34,7 +34,7 @@ jobs:
         .\vcpkg.exe install mbedtls:x64-windows
 
     - name: Clone OpenRGB repository
-      run: git clone https://gitlab.com/CalcProgrammer1/OpenRGB
+      run: git clone brkeejp/OpenRGB
 
     - name: Running cmake (windows)
       run: |
