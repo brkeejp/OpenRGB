@@ -1,5 +1,4 @@
 {
-  "runVcpkgInstall": true,
   "dependencies": [
     "qt5",
     "hidapi",

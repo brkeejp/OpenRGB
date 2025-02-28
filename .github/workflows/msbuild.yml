@@ -29,6 +29,11 @@ jobs:
 
     steps:
 
+    - name: run-vcpkg
+      uses: lukka/run-vcpkg@b322364f06308bdd24823f9d8f03fe0cc86fd46f
+      with:
+        vcpkgJsonGlob: 'vcpkg.json'
+
     - name: Checkout
       uses: actions/checkout@v4
       with:
@@ -37,10 +42,6 @@ jobs:
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
 
-    - name: Restore from cache and setup vcpkg executable and data files.
-      uses: lukka/run-vcpkg@v11
-      with:
-        vcpkgJsonGlob: 'vcpkg.json'
 
     - name: Build
       working-directory: ${{env.GITHUB_WORKSPACE}}
