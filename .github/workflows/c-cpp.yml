@@ -7,17 +7,37 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
-
-    runs-on: ubuntu-latest
+  build-windows:
+    name: Build OpenRGB on Windows
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v4
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+
+    - name: Set up Visual Studio
+      uses: microsoft/setup-msbuild@v1
+      with:
+        vs-version: '2019'
+
+    - name: Install dependencies
+      run: |
+        choco install qt5
+
+    - name: Clone OpenRGB repository
+      run: git clone https://gitlab.com/CalcProgrammer1/OpenRGB
+
+    - name: Build OpenRGB
+      run: |
+        cd OpenRGB
+        qmake OpenRGB.pro
+        msbuild OpenRGB.sln /p:Configuration=Release
+
+    - name: Run tests
+      run: |
+        cd OpenRGB
+        msbuild OpenRGB.sln /t:Build /p:Configuration=Release /p:Platform=x64
+
+    - name: Run distcheck
+      run: |
+        cd OpenRGB
+        msbuild OpenRGB.sln /t:Build /p:Configuration=Release
