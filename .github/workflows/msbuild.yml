@@ -24,11 +24,15 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  Windows:
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v1.0.2
@@ -37,51 +41,13 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: nuget restore ${{env.SOLUTION_FILE_PATH}}
 
+    - name: Restore from cache and setup vcpkg executable and data files.
+      uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgJsonGlob: 'vcpkg.json'
+
     - name: Build
       working-directory: ${{env.GITHUB_WORKSPACE}}
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
       run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
-
-  Windows:
-    name: build-windows
-    runs-on: [self-hosted, windows]
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v1
-      with:
-        submodules: recursive
-
-    - name: Installing dependencies
-      run: |
-        cd ..
-        git clone https://github.com/Microsoft/vcpkg.git
-        cd vcpkg
-        git checkout --force 2020.01
-        .\bootstrap-vcpkg.bat
-        .\vcpkg.exe install qt5:x64-windows
-        .\vcpkg.exe install hidapi:x64-windows
-        .\vcpkg.exe install libusb:x64-windows
-        .\vcpkg.exe install mbedtls:x64-windows
-    - name: Clone OpenRGB repository
-      run: git clone brkeejp/OpenRGB
-
-    - name: Running cmake (windows)
-      run: |
-        cd ${{ github.workspace }}/OpenRGB
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/../vcpkg/scripts/buildsystems/vcpkg.cmake
-    - name: Build OpenRGB (windows)
-      run: |
-        cd ${{ github.workspace }}/OpenRGB/build
-        MSBuild.exe OpenRGB.sln /p:Configuration=Release
-    - name: Run tests (windows)
-      run: |
-        cd ${{ github.workspace }}/OpenRGB/build
-        MSBuild.exe OpenRGB.sln /t:Build /p:Configuration=Release /p:Platform=x64
-    - name: Run distcheck (windows)
-      run: |
-        cd ${{ github.workspace }}/OpenRGB/build
-        MSBuild.exe OpenRGB.sln /t:Build /p:Configuration=Release

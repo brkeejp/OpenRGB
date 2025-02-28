@@ -1,0 +1,8 @@
+{
+    "dependencies": [
+      "qt5",
+      "hidapi",
+      "libusb",
+      "mbedtls"
+    ]
+  }
